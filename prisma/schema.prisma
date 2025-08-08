@@ -1,0 +1,29 @@
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+// This import path is a placeholder for the actual React component that will represent
+// the core data model and persistence layer status. It is expected to fail initially
+// because the component file 'src/components/DataModelStatusDisplay.tsx' does not yet exist.
+import DataModelStatusDisplay from '../../src/components/DataModelStatusDisplay';
+
+describe('DataModelStatusDisplay', () => {
+  it('should display an overview of the core data model and persistence status, including defined models and record counts', () => {
+    render(<DataModelStatusDisplay />);
+
+    // Verify the presence of a main heading for the data model overview
+    expect(screen.getByRole('heading', { name: /Data Model Overview/i, level: 1 })).toBeInTheDocument();
+
+    // Verify the display of the database connection status
+    expect(screen.getByText(/Database Connection Status:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Connected and Operational/i)).toBeInTheDocument();
+
+    // Verify the presence of a section for defined models
+    expect(screen.getByRole('heading', { name: /Defined Models:/i, level: 2 })).toBeInTheDocument();
+
+    // Verify display of specific model names and hypothetical record counts based on the Prisma schema
+    // These specific texts will cause the test to fail if the component doesn't render them,
+    // or if the component is not yet implemented.
+    expect(screen.getByText(/User Model: \d+ records/i)).toBeInTheDocument();
+    expect(screen.getByText(/Product Model: \d+ records/i)).toBeInTheDocument();
+    expect(screen.getByText(/Order Model: \d+ records/i)).toBeInTheDocument();
+  });
+});
