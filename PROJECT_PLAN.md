@@ -112,3 +112,14 @@ This feature establishes a comprehensive system for catching, handling, and repo
 *   `src/server/utils/logger.ts`
 *   `src/server/api/routers/system.ts`
 *   `src/types/error.ts`
+
+### Feature: 9. Post-Activity Review and Detailed Feedback
+
+This feature provides users with a dedicated interface to review their completed activities, understand which answers were correct or incorrect, and receive detailed feedback, explanations, or hints for each question. This enhances the learning process by allowing students to learn from their mistakes and reinforce their understanding immediately after an activity.
+
+*   `src/pages/ActivityReviewPage.tsx`
+*   `src/components/activity/AnswerReviewCard.tsx`
+*   `src/components/activity/FeedbackMessage.tsx`
+*   `src/utils/feedbackGenerator.ts`
+*   `src/server/services/reviewService.ts`
+*   `src/types/activityReview.ts`
