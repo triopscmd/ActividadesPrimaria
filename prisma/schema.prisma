@@ -1,29 +1,80 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-// This import path is a placeholder for the actual React component that will represent
-// the core data model and persistence layer status. It is expected to fail initially
-// because the component file 'src/components/DataModelStatusDisplay.tsx' does not yet exist.
-import DataModelStatusDisplay from '../../src/components/DataModelStatusDisplay';
+```typescript
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import EntityList from './EntityList'; // This import will cause the test to fail initially as EntityList.tsx does not exist.
 
-describe('DataModelStatusDisplay', () => {
-  it('should display an overview of the core data model and persistence status, including defined models and record counts', () => {
-    render(<DataModelStatusDisplay />);
+describe('EntityList', () => {
+  // Mock a hypothetical data fetching hook that the EntityList component would use
+  // This setup ensures that once the component exists, we can control its data.
+  const mockEntities = [
+    { id: 'user-1', name: 'John Doe', email: 'john.doe@example.com' },
+    { id: 'user-2', name: 'Jane Smith', email: 'jane.smith@example.com' },
+  ];
 
-    // Verify the presence of a main heading for the data model overview
-    expect(screen.getByRole('heading', { name: /Data Model Overview/i, level: 1 })).toBeInTheDocument();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-    // Verify the display of the database connection status
-    expect(screen.getByText(/Database Connection Status:/i)).toBeInTheDocument();
-    expect(screen.getByText(/Connected and Operational/i)).toBeInTheDocument();
+  it('should display a loading indicator initially and then list entities from the core data model', async () => {
+    // Simulate initial loading state then successful data fetch
+    vi.mock('../hooks/useEntities', () => ({
+      useEntities: vi.fn()
+        .mockReturnValueOnce({ data: undefined, isLoading: true, isError: false, error: null })
+        .mockReturnValueOnce({ data: mockEntities, isLoading: false, isError: false, error: null }),
+    }));
 
-    // Verify the presence of a section for defined models
-    expect(screen.getByRole('heading', { name: /Defined Models:/i, level: 2 })).toBeInTheDocument();
+    render(<EntityList />);
 
-    // Verify display of specific model names and hypothetical record counts based on the Prisma schema
-    // These specific texts will cause the test to fail if the component doesn't render them,
-    // or if the component is not yet implemented.
-    expect(screen.getByText(/User Model: \d+ records/i)).toBeInTheDocument();
-    expect(screen.getByText(/Product Model: \d+ records/i)).toBeInTheDocument();
-    expect(screen.getByText(/Order Model: \d+ records/i)).toBeInTheDocument();
+    // Expect loading state to be present
+    expect(screen.getByText(/Loading entities.../i)).toBeInTheDocument();
+
+    // Wait for the data to load and verify entities are displayed
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading entities.../i)).not.toBeInTheDocument();
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
+    });
+  });
+
+  it('should display an error message if fetching entities from the persistence layer fails', async () => {
+    const errorMessage = 'Failed to retrieve data from the server.';
+
+    // Simulate an error during data fetching
+    vi.mock('../hooks/useEntities', () => ({
+      useEntities: vi.fn(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: true,
+        error: new Error(errorMessage),
+      })),
+    }));
+
+    render(<EntityList />);
+
+    // Expect the error message to be displayed
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(errorMessage, 'i'))).toBeInTheDocument();
+    });
+    expect(screen.queryByText('John Doe')).not.toBeInTheDocument(); // Ensure no data is displayed
+  });
+
+  it('should display a message when no entities are found', async () => {
+    // Simulate an empty data set
+    vi.mock('../hooks/useEntities', () => ({
+      useEntities: vi.fn(() => ({
+        data: [],
+        isLoading: false,
+        isError: false,
+        error: null,
+      })),
+    }));
+
+    render(<EntityList />);
+
+    // Expect a 'no entities found' message
+    await waitFor(() => {
+      expect(screen.getByText(/No entities found/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText('John Doe')).not.toBeInTheDocument(); // Ensure no data is displayed
   });
 });
