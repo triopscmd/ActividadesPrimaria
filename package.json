@@ -1,0 +1,29 @@
+import { render, screen } from '@testing-library/react';
+import { it, expect, describe } from 'vitest';
+import CoreConfigSummary from '../src/components/CoreConfigSummary'; // This import will fail as the component does not exist yet
+
+describe('CoreConfigSummary', () => {
+  it('renders essential project configuration details', () => {
+    render(<CoreConfigSummary />);
+
+    // Assert that the component displays the project name, assuming it's derived from package.json 'name'
+    expect(screen.getByRole('heading', { name: /my-app/i })).toBeInTheDocument();
+
+    // Assert the project version is displayed
+    expect(screen.getByText(/version: 1\.0\.0/i)).toBeInTheDocument();
+
+    // Assert a section for scripts is present
+    expect(screen.getByRole('heading', { name: /scripts/i })).toBeInTheDocument();
+
+    // Assert common scripts are listed
+    expect(screen.getByText(/start/i)).toBeInTheDocument();
+    expect(screen.getByText(/build/i)).toBeInTheDocument();
+    expect(screen.getByText(/test/i)).toBeInTheDocument();
+
+    // Assert a section for dependencies is present
+    expect(screen.getByRole('heading', { name: /dependencies/i })).toBeInTheDocument();
+
+    // Assert a key dependency is mentioned (e.g., 'react')
+    expect(screen.getByText(/react/i)).toBeInTheDocument();
+  });
+});
