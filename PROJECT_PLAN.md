@@ -99,3 +99,16 @@ This feature develops the system to manage user authentication and sessions, tra
 *   `src/server/auth.ts`
 *   `src/server/services/userService.ts`
 *   `src/server/services/userProgressService.ts`
+
+## New Features
+
+### Feature: 8. Robust Error Handling and Centralized Logging
+
+This feature establishes a comprehensive system for catching, handling, and reporting errors across both the frontend and backend, along with implementing centralized, structured logging to improve application stability, maintainability, and debuggability. This foundational improvement ensures that runtime issues can be effectively identified, diagnosed, and resolved, contributing to a more reliable and professional application.
+
+*   `src/components/common/ErrorBoundary.tsx`
+*   `src/utils/errorHandler.ts`
+*   `src/server/middlewares/errorHandler.ts`
+*   `src/server/utils/logger.ts`
+*   `src/server/api/routers/system.ts`
+*   `src/types/error.ts`
